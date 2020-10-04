@@ -28,7 +28,7 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: Download chromedriver
-        run: curl -LOs hhttps://chromedriver.storage.googleapis.com/$(<LATEST_RELEASE)/chromedriver_linux64.zip
+        run: curl -LOs https://chromedriver.storage.googleapis.com/$(<LATEST_RELEASE)/chromedriver_linux64.zip
       
       - name: Create Release
         id: create_release
