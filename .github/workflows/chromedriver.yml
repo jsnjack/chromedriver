@@ -36,8 +36,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.DRIVER_VERSION }}
-          release_name: ${{ env.DRIVER_VERSION }}
+          tag_name: v${{ env.DRIVER_VERSION }}
+          release_name: v${{ env.DRIVER_VERSION }}
           draft: false
           prerelease: false
       - name: Upload Release Asset
