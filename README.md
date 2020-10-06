@@ -1,3 +1,8 @@
 # chromedriver
 
-Check Release page for the most recent stable chromedriver
+Publishes latest stable chromedriver version as a GitHub release
+
+# How to install?
+```bash
+grm install jsnjack/chromedriver
+```
