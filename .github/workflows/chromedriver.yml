@@ -50,7 +50,7 @@ jobs:
 
       - name: Upload Release Asset Linux
         if: steps.create_release.outcome == 'success' && steps.create_release.conclusion == 'success'
-        id: upload-release-asset
+        id: upload-release-asset-linux
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -62,7 +62,7 @@ jobs:
 
       - name: Upload Release Asset MacOS
         if: steps.create_release.outcome == 'success' && steps.create_release.conclusion == 'success'
-        id: upload-release-asset
+        id: upload-release-asset-macos
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -74,7 +74,7 @@ jobs:
 
       - name: Upload Release Asset MacOS M1
         if: steps.create_release.outcome == 'success' && steps.create_release.conclusion == 'success'
-        id: upload-release-asset
+        id: upload-release-asset-m1
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
