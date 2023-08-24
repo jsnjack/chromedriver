@@ -20,66 +20,21 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       # - uses: actions/checkout@v2
-      - name: Download latest chromedriver version
-        run: curl -LOs https://chromedriver.storage.googleapis.com/LATEST_RELEASE
+      - name: Download chrome data
+        run: curl -o data.json https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json
 
-      - name: Set value
-        run: echo "DRIVER_VERSION=$(<LATEST_RELEASE)" >> $GITHUB_ENV
+      - name: Set latest chromedriver version value
+        run: echo "DRIVER_VERSION=$(jq -r .channels.Stable.version data.json)" >> $GITHUB_ENV
 
-      # Runs a set of commands using the runners shell
-      - name: Download chromedriver for linux
-        run: curl -LOs https://chromedriver.storage.googleapis.com/$(<LATEST_RELEASE)/chromedriver_linux64.zip
-
-      - name: Download chromedriver for macos
-        run: curl -LOs https://chromedriver.storage.googleapis.com/$(<LATEST_RELEASE)/chromedriver_mac64.zip
-
-      - name: Download chromedriver for macos m1
-        run: curl -LOs https://chromedriver.storage.googleapis.com/$(<LATEST_RELEASE)/chromedriver_mac64_m1.zip
+      - name: Download drivers
+        run: jq -r .channels.Stable.downloads.chromedriver[].url data.json | xargs -n 1 curl -O
 
       - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          name: v${{ env.DRIVER_VERSION }}
           tag_name: v${{ env.DRIVER_VERSION }}
-          release_name: v${{ env.DRIVER_VERSION }}
           draft: false
           prerelease: false
-
-      - name: Upload Release Asset Linux
-        if: steps.create_release.outcome == 'success' && steps.create_release.conclusion == 'success'
-        id: upload-release-asset-linux
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ./chromedriver_linux64.zip
-          asset_name: chromedriver_linux64.zip
-          asset_content_type: application/zip
-
-      - name: Upload Release Asset MacOS
-        if: steps.create_release.outcome == 'success' && steps.create_release.conclusion == 'success'
-        id: upload-release-asset-macos
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ./chromedriver_mac64.zip
-          asset_name: chromedriver_mac64.zip
-          asset_content_type: application/zip
-
-      - name: Upload Release Asset MacOS M1
-        if: steps.create_release.outcome == 'success' && steps.create_release.conclusion == 'success'
-        id: upload-release-asset-m1
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ./chromedriver_mac64_m1.zip
-          asset_name: chromedriver_mac64_m1.zip
-          asset_content_type: application/zip
+          files: chromedriver-*.zip
